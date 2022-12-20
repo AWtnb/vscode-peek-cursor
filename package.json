@@ -5,6 +5,9 @@
   "version": "0.0.1",
   "publisher": "awtnb",
   "icon": "images/logo.png",
+  "repository": {
+    "url": "https://github.com/AWtnb/vscode-peek-cursor"
+  },
   "engines": {
     "vscode": "^1.74.0"
   },
