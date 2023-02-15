@@ -22,9 +22,10 @@ const peekNext = (editor: vscode.TextEditor) => {
     return visible.end.line < sel.start.line;
   });
   const targetLine = unseenCursors.length < 1 ? sorted[0].start.line : unseenCursors[0].start.line;
+  const scrollPos = unseenCursors.length < 1 ? "center" : "top";
   vscode.commands.executeCommand("revealLine", {
     lineNumber: targetLine,
-    at: "top",
+    at: scrollPos,
   });
 };
 
