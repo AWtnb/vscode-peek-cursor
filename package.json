@@ -26,11 +26,13 @@
     "commands": [
       {
         "command": "peek-cursor.peekNext",
-        "title": "peek-cursor: to Next"
+        "title": "to Next",
+        "category": "peek-cursor"
       },
       {
         "command": "peek-cursor.peekPrevious",
-        "title": "peek-cursor: to Previous"
+        "title": "to Previous",
+        "category": "peek-cursor"
       }
     ],
     "keybindings": [
