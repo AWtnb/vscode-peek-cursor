@@ -2,7 +2,7 @@
   "name": "peek-cursor",
   "displayName": "peek-cursor",
   "description": "peek cursor or selection out of visible area.",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "publisher": "awtnb",
   "icon": "images/logo.png",
   "repository": {
