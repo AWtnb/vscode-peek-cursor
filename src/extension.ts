@@ -1,5 +1,22 @@
 import * as vscode from "vscode";
 
+const statusbar: vscode.StatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
+
+const updateStatusbar = (target: vscode.Range, selections: vscode.Selection[], visibleHeight: number) => {
+  const buffer = Math.ceil(visibleHeight / 2);
+  if (target.start.line < selections[0].start.line + buffer) {
+    statusbar.text = "Peeking FIRST cursor";
+    statusbar.show();
+    return;
+  }
+  if (selections[selections.length - 1].start.line - buffer < target.start.line) {
+    statusbar.text = "Peeking LAST cursor";
+    statusbar.show();
+    return;
+  }
+  statusbar.hide();
+};
+
 class Peeker {
   private readonly _editor: vscode.TextEditor;
   constructor(editor: vscode.TextEditor) {
@@ -26,28 +43,30 @@ class Peeker {
     if (this._editor.selections.length < 2) {
       return;
     }
-    const sorted = this.getOrderedSelections();
+    const ordered = this.getOrderedSelections();
     const visible = this.getVisibleRange();
-    const unseenCursors = sorted.filter((sel) => {
+    const unseenCursors = ordered.filter((sel) => {
       return visible.end.line < sel.start.line;
     });
-    const targetLine = unseenCursors.length < 1 ? sorted[0].start.line : unseenCursors[0].start.line;
-    const targetRange = this._editor.document.lineAt(targetLine).range;
-    this._editor.revealRange(targetRange, vscode.TextEditorRevealType.InCenter);
+    const target = unseenCursors.length < 1 ? ordered[0] : unseenCursors[0];
+    this._editor.revealRange(target, vscode.TextEditorRevealType.InCenter);
+    const visibleHeight = visible.end.line - visible.start.line;
+    updateStatusbar(target, ordered, visibleHeight);
   }
 
   peekPrevious() {
     if (this._editor.selections.length < 2) {
       return;
     }
-    const sorted = this.getOrderedSelections();
+    const ordered = this.getOrderedSelections();
     const visible = this.getVisibleRange();
-    const pastCursors = sorted.filter((sel) => {
+    const pastCursors = ordered.filter((sel) => {
       return sel.end.line < visible.start.line;
     });
-    const targetLine = pastCursors.length < 1 ? sorted[sorted.length - 1].end.line : pastCursors[pastCursors.length - 1].start.line;
-    const targetRange = this._editor.document.lineAt(targetLine).range;
-    this._editor.revealRange(targetRange, vscode.TextEditorRevealType.InCenter);
+    const target = pastCursors.length < 1 ? ordered[ordered.length - 1] : pastCursors[pastCursors.length - 1];
+    this._editor.revealRange(target, vscode.TextEditorRevealType.InCenter);
+    const visibleHeight = visible.end.line - visible.start.line;
+    updateStatusbar(target, ordered, visibleHeight);
   }
 }
 
@@ -64,6 +83,11 @@ export function activate(context: vscode.ExtensionContext) {
       peeker.peekPrevious();
     })
   );
+  vscode.window.onDidChangeTextEditorSelection(() => {
+    statusbar.hide();
+  });
 }
 
-export function deactivate() {}
+export function deactivate() {
+  statusbar.dispose();
+}
