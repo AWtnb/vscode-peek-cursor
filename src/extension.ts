@@ -32,11 +32,8 @@ class Peeker {
       return visible.end.line < sel.start.line;
     });
     const targetLine = unseenCursors.length < 1 ? sorted[0].start.line : unseenCursors[0].start.line;
-    const scrollPos = unseenCursors.length < 1 ? "center" : "top";
-    vscode.commands.executeCommand("revealLine", {
-      lineNumber: targetLine,
-      at: scrollPos,
-    });
+    const targetRange = this._editor.document.lineAt(targetLine).range;
+    this._editor.revealRange(targetRange, vscode.TextEditorRevealType.InCenter);
   }
 
   peekPrevious() {
@@ -49,10 +46,8 @@ class Peeker {
       return sel.end.line < visible.start.line;
     });
     const targetLine = pastCursors.length < 1 ? sorted[sorted.length - 1].end.line : pastCursors[pastCursors.length - 1].start.line;
-    vscode.commands.executeCommand("revealLine", {
-      lineNumber: targetLine,
-      at: "top",
-    });
+    const targetRange = this._editor.document.lineAt(targetLine).range;
+    this._editor.revealRange(targetRange, vscode.TextEditorRevealType.InCenter);
   }
 }
 
